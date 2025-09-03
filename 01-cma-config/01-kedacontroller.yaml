@@ -1,0 +1,27 @@
+apiVersion: keda.sh/v1alpha1
+kind: KedaController
+metadata:
+  name: keda
+  namespace: openshift-keda
+spec:
+  metricsServer:
+    auditConfig:
+      lifetime:
+        maxAge: "2"
+        maxBackup: "1"
+        maxSize: "50"
+      logFormat: json
+      logOutputVolumeClaim: keda-logs-file
+      policy:
+        omitManagedFields: false
+        omitStages:
+        - RequestReceived
+        rules:
+        - level: Metadata
+    logLevel: "0"
+  operator:
+    caConfigMaps: []
+    logEncoder: console
+    logLevel: info
+  serviceAccount: {}
+  watchNamespace: ""

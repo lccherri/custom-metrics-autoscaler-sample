@@ -1,0 +1,13 @@
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: traefik
+  namespace: traefik
+spec:
+  to:
+    kind: Service
+    name: traefik
+  port:
+    targetPort: web
+  tls:
+    termination: edge

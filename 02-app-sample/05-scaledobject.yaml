@@ -1,0 +1,44 @@
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  # annotations:
+  #   kubectl.kubernetes.io/last-applied-configuration: |
+  #     {"apiVersion":"keda.sh/v1alpha1","kind":"ScaledObject","metadata":{"annotations":{},"name":"traefik","namespace":"traefik"},"spec":{"cooldownPeriod":60,"maxReplicaCount":5,"minReplicaCount":0,"scaleTargetRef":{"name":"traefik"},"triggers":[{"metadata":{"desiredReplicas":"5","end":"*/7 * * * *","start":"*/5 * * * *","timezone":"America/Sao_Paulo"},"type":"cron"}]}}
+  # creationTimestamp: "2025-08-28T04:31:37Z"
+  # finalizers:
+  # - finalizer.keda.sh
+  # generation: 17
+  # labels:
+  #   scaledobject.keda.sh/name: traefik
+  name: traefik
+  namespace: traefik
+  # resourceVersion: "362871"
+  # uid: b91d7f9e-a11b-48c9-9761-005437bbf9de
+spec:
+  cooldownPeriod: 300
+  pollingInterval: 30
+  maxReplicaCount: 10
+  minReplicaCount: 2
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: traefik
+  triggers:
+  - type: cron
+    metadata:
+      desiredReplicas: "4"
+      start: 0,30 * * * *
+      end: 15,45 * * * *
+      timezone: America/Sao_Paulo
+  - type: prometheus
+    metadata:
+      serverAddress: https://thanos-querier.openshift-monitoring.svc.cluster.local:9092
+      namespace: traefik
+      metricName: traefik_entrypoint_requests_total
+      threshold: '2'
+      # query: avg(go_threads{container="traefik"})
+      query: sum(rate(traefik_entrypoint_requests_total[1m]))
+      authModes: "bearer"
+    authenticationRef:
+      name: thanos-trigger-auth
+      kind: ClusterTriggerAuthentication

@@ -1,0 +1,12 @@
+kind: ClusterTriggerAuthentication
+apiVersion: keda.sh/v1alpha1
+metadata: 
+  name: thanos-trigger-auth
+spec:
+  secretTargetRef: 
+  - parameter: bearerToken 
+    name: thanos-token 
+    key: token 
+  - parameter: ca
+    name: thanos-token
+    key: ca.crt
