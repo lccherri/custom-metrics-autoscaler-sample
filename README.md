@@ -83,13 +83,23 @@ oc get pods -n openshift-keda
 2. Confirm application pods are deployed:
 
 ```bash
-oc get pods -n traefik-sample
+oc get pods -n traefik
 ```
 
 3. Check if `ScaledObject` is active and scaling:
 
 ```bash
-oc describe scaledobject -n traefik-sample
+oc describe scaledobject -n traefik
+```
+---
+
+## Test Scaling
+
+Before running the test commands below, ensure that Apache Benchmark (`ab`) is installed on your system (see: https://httpd.apache.org/docs/2.4/programs/ab.html).
+
+```bash
+TRAEFIK_HOST=$(oc get route traefik -n traefik -o jsonpath={.spec.host})
+ab -n 10000 -c 10 -m GET https://${TRAEFIK_HOST}/
 ```
 
 ---
